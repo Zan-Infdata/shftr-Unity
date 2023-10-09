@@ -1,0 +1,27 @@
+using Siccity.GLTFUtility;
+using UnityEngine;
+using SysTask = System.Threading.Tasks;
+
+static class ModelController{
+    public static GameObject ImportModel(string file, Transform parent){
+        string fp = FileManager.DOWN_PATH+file;
+
+        GameObject result = Importer.LoadFromFile(fp);
+
+        result.transform.SetParent(parent, false);
+
+        return result;
+    }
+
+
+    public static async SysTask.Task<bool> HandleDownload(string file){
+        //check if model is already downloaded
+        bool modExsits = FileManager.CheckIfModelExists(file);
+
+        if(!modExsits){
+            //download the model
+            await APIController.DownoadModel(file);
+        }
+        return true;
+    }
+}
