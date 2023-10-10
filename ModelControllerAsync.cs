@@ -14,12 +14,11 @@ public class ModelControllerAsync{
     }
 
     public void ImportModelAsync(string fp) {
-        Debug.Log(fp);
         Importer.LoadFromFileAsync(fp, new ImportSettings(), OnFinishAsync);
     }
 
     private void OnFinishAsync(GameObject result, AnimationClip[] animations) {
-        
+
         result.transform.SetParent(parent, false);
         //hide default model
         this.defModel.gameObject.SetActive(false);

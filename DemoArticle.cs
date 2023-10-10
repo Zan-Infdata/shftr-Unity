@@ -47,16 +47,12 @@ public class DemoArticle : MonoBehaviour{
         if(!isLoaded){
             if(jh.IsCompleted){
 
-
                 jh.Complete();
                 string file = new string(na.ToArray()).Trim('\0');
                 na.Dispose();
 
                 ModelController.ImportModelAsync(file,model,defModel);
 
-
-
-                
                 isLoaded = true;
             }
         }
