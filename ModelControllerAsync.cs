@@ -19,8 +19,7 @@ public class ModelControllerAsync{
     }
 
     private void OnFinishAsync(GameObject result, AnimationClip[] animations) {
-        Debug.Log("Finished importing " + result.name);
-
+        
         result.transform.SetParent(parent, false);
         //hide default model
         this.defModel.gameObject.SetActive(false);
