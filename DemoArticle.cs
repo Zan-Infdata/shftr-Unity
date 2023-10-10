@@ -3,7 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 using Siccity.GLTFUtility;
+using Unity.Jobs;
+using Unity.Collections;
+using System.Text;
 
+
+
+using System.IO;
+using System;
 
 public class DemoArticle : MonoBehaviour{
     [SerializeField]
@@ -14,6 +21,12 @@ public class DemoArticle : MonoBehaviour{
     private Transform model;
     [SerializeField]
     private GameObject currDefModel;
+
+    [SerializeField]
+    private bool isLoaded;
+
+    private JobHandle jh;
+    private NativeArray<char> na;
 
     public int GetCurrInx(){
         return currInx;
@@ -29,8 +42,32 @@ public class DemoArticle : MonoBehaviour{
         model = transform.GetChild(1);
     }
 
+    void Update(){
+        // load the model if the job is finished
+        if(!isLoaded){
+            if(jh.IsCompleted){
+
+
+                jh.Complete();
+                string file = new string(na.ToArray()).Trim('\0');
+                na.Dispose();
+
+                ModelController.ImportModelAsync(file,model,defModel);
+
+
+
+                
+                isLoaded = true;
+            }
+        }
+        
+    }
+
     void Start(){
-        ShowCurrentModel();
+        isLoaded = false;
+        SetTransforms();
+        jh = J_ShowCurrentModel();
+
     }
 
     public async void ChangeArticle(int inx){
@@ -60,8 +97,33 @@ public class DemoArticle : MonoBehaviour{
 
     }
 
-    private async void ShowCurrentModel(){
-        int aid = ArticleManager.MapInx(currInx);
+    private JobHandle J_ShowCurrentModel(){
+
+        na = new NativeArray<char>(45,Allocator.Persistent);
+
+        ShowCurrentModelJob job = new ShowCurrentModelJob{
+            modelInx = currInx,
+            result = na,
+        };
+
+        return job.Schedule();
+    }
+
+
+    
+
+}
+
+
+
+public struct ShowCurrentModelJob : IJob{
+
+    public int modelInx;
+    public NativeArray<char> result;
+    public async void Execute(){
+
+
+        int aid = ArticleManager.MapInx(modelInx);
 
         //get file name
         JObject json_response = await APIController.GetCurrModelName(aid.ToString()); 
@@ -70,14 +132,12 @@ public class DemoArticle : MonoBehaviour{
         //hande download
         await ModelController.HandleDownload(modelFileName);
 
+        char[] dump = modelFileName.ToCharArray();
 
-        //show model
-        ModelController.ImportModel(modelFileName, model);
-        //hide default model
-        defModel.gameObject.SetActive(false);
+        for (int i = 0; i < dump.Length; i++) {
+            result[i] = dump[i];
+        }
+
 
     }
-
-    
-
 }

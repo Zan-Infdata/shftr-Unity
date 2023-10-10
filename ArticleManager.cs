@@ -9,8 +9,9 @@ public static class ArticleManager{
 
 
 
-
+    [SerializeField]
     private static Dictionary<int, int> inxMap = new Dictionary<int, int>();
+    [SerializeField]
     private static List<string> articleNames = new List<string>();
 
     public static Dictionary<int, int> GetInxMapp(){
@@ -32,7 +33,7 @@ public static class ArticleManager{
         if(articleNames.Any()){
             return;
         }
-        
+
         JObject json_response = await APIController.GetArticleList();
 
         int i = 0;

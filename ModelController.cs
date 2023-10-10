@@ -13,6 +13,12 @@ static class ModelController{
         return result;
     }
 
+    public static void ImportModelAsync(string file, Transform parent, Transform defModel){
+        string fp = FileManager.DOWN_PATH+file;
+        ModelControllerAsync mca = new ModelControllerAsync(parent,defModel);
+        mca.ImportModelAsync(fp);
+    }
+
 
     public static async SysTask.Task<bool> HandleDownload(string file){
         //check if model is already downloaded
