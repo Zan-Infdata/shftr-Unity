@@ -7,7 +7,8 @@ using SysTask = System.Threading.Tasks;
 
 public static class ArticleManager{
 
-
+    public const string CHILD_1 = "DefModel";
+    public const string CHILD_2 = "Model";
 
     [SerializeField]
     private static Dictionary<int, int> inxMap = new Dictionary<int, int>();

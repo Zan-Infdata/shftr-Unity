@@ -36,10 +36,31 @@ public class DemoArticle : MonoBehaviour{
         currInx=i;
     }
 
-    //TODO: maybe find better way to deal with this
+
+    void Reset(){
+        bool check1 = transform.Find(ArticleManager.CHILD_1);
+        bool check2 = transform.Find(ArticleManager.CHILD_2);
+
+        if (!check1){
+            CreateChildNode(ArticleManager.CHILD_1);
+        }
+        if (!check2){
+            CreateChildNode(ArticleManager.CHILD_2);
+        }
+
+        SetTransforms();
+    }
+
+    private void CreateChildNode(string name){
+
+        GameObject go = new GameObject(name);
+        go.transform.SetParent(transform, false);
+    }
+
+
     public void SetTransforms(){
-        defModel = transform.GetChild(0);
-        model = transform.GetChild(1);
+        defModel = transform.Find(ArticleManager.CHILD_1);
+        model = transform.Find(ArticleManager.CHILD_2);
     }
 
     void Update(){

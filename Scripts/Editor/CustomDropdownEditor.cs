@@ -11,7 +11,7 @@ public class CustomDropdownEditor : Editor {
     void OnEnable(){
         ArticleManager.FillArticles();
         da = (DemoArticle)target;
-        da.SetTransforms();
+        //da.SetTransforms();
 
     }
     
