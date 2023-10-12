@@ -13,8 +13,10 @@ using System.IO;
 using System;
 
 public class DemoArticle : MonoBehaviour{
+
     [SerializeField]
-    private int currInx;
+    private int currId;
+
     [SerializeField]
     private Transform defModel;
     [SerializeField]
@@ -25,15 +27,26 @@ public class DemoArticle : MonoBehaviour{
     [SerializeField]
     private bool isLoaded;
 
+    [SerializeField]
+    private string filter = "";
+
     private JobHandle jh;
     private NativeArray<char> na;
 
-    public int GetCurrInx(){
-        return currInx;
+    public string GetFilter(){
+        return filter;
     }
 
-    public void SetCurrInx(int i){
-        currInx=i;
+    public void SetFilter(string f){
+        filter= f;
+    }
+
+    public int GetCurrId(){
+        return currId;
+    }
+
+    public void SetCurrId(int i){
+        currId=i;
     }
 
 
@@ -88,19 +101,28 @@ public class DemoArticle : MonoBehaviour{
     }
 
     public async void ChangeArticle(int inx){
+
+        //return out if there is no inx
+        if(inx ==-1){
+            return;
+        }
+
+        int id = ArticleManager.MapInx(inx);
         
         //return out if the index is the same
-        if (currInx == inx)
+        if (currId == id)
             return;
+
+        
         //destroy previous model
         if (currDefModel != null){
             DestroyImmediate(currDefModel);
         }
 
 
-        int aid = ArticleManager.MapInx(inx);
+        currId = id;
         //get file name
-        JObject json_response = await APIController.GetArticleDefaultFileName(aid.ToString()); 
+        JObject json_response = await APIController.GetArticleDefaultFileName(currId.ToString()); 
         string modelFileName = json_response[APIController.DATA][0][APIController.COL1].ToString();
         
         //handle download
@@ -109,9 +131,6 @@ public class DemoArticle : MonoBehaviour{
         //show the model
         currDefModel = ModelController.ImportModel(modelFileName, defModel);
 
-
-        currInx= inx;
-
     }
 
     private JobHandle J_ShowCurrentModel(){
@@ -119,7 +138,7 @@ public class DemoArticle : MonoBehaviour{
         na = new NativeArray<char>(45,Allocator.Persistent);
 
         ShowCurrentModelJob job = new ShowCurrentModelJob{
-            modelInx = currInx,
+            modelId = currId,
             result = na,
         };
 
@@ -135,15 +154,14 @@ public class DemoArticle : MonoBehaviour{
 
 public struct ShowCurrentModelJob : IJob{
 
-    public int modelInx;
+    public int modelId;
     public NativeArray<char> result;
     public async void Execute(){
 
 
-        int aid = ArticleManager.MapInx(modelInx);
 
         //get file name
-        JObject json_response = await APIController.GetCurrModelName(aid.ToString()); 
+        JObject json_response = await APIController.GetCurrModelName(modelId.ToString()); 
         string modelFileName = json_response[APIController.DATA][0][APIController.COL1].ToString();
 
         //hande download

@@ -11,12 +11,24 @@ public static class ArticleManager{
     public const string CHILD_2 = "Model";
 
     [SerializeField]
+    private static Dictionary<int, int> idMap = new Dictionary<int, int>();
+
+    [SerializeField]
     private static Dictionary<int, int> inxMap = new Dictionary<int, int>();
     [SerializeField]
     private static List<string> articleNames = new List<string>();
 
-    public static Dictionary<int, int> GetInxMapp(){
-        return inxMap;
+    public static Dictionary<int, int> GetIdMapp(){
+        return idMap;
+    }
+
+    public static int MapId(int i){
+
+        // This article was never chosen or the filter currently doesn't include selected article.
+        if(!idMap.ContainsKey(i)){
+            return -1;
+        }
+        return idMap[i];
     }
 
     public static int MapInx(int i){
@@ -27,27 +39,34 @@ public static class ArticleManager{
         return articleNames.ToArray();
     }
 
+    public static void ResetIdMap(){
+        idMap = new Dictionary<int, int>();
+        inxMap = new Dictionary<int, int>();
+        articleNames = new List<string>();
+    }
 
-    public static async void FillArticles(){
+
+    public static async void FillArticles(string filter){
 
         //return out if articles were already loaded
         if(articleNames.Any()){
             return;
         }
 
-        JObject json_response = await APIController.GetArticleList();
+        JObject json_response = await APIController.GetArticleList(filter);
 
-        int i = 0;
+        int inx = 0;
         foreach (var art in json_response[APIController.DATA]){
 
             string name = art[APIController.COL2].ToString();
-            int inx = int.Parse(art[APIController.COL1].ToString());
+            int id = int.Parse(art[APIController.COL1].ToString());
 
 
 
             articleNames.Add(name);
-            inxMap.Add(i,inx);
-            i++;
+            idMap.Add(id,inx);
+            inxMap.Add(inx,id);
+            inx++;
         }
 
 

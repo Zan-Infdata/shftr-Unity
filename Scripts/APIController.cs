@@ -21,16 +21,16 @@ public static class APIController{
 
 
 
-    public static async SysTask.Task<JObject> GetArticleList(){
+    public static async SysTask.Task<JObject> GetArticleList(string f){
         string testURL = API_URL+API_ART_LIST;
-        string urlParameters = "";
+        string urlParameters = "?filter="+f;
 
         HttpClient client = new HttpClient();
-        client.BaseAddress = new Uri(testURL);
+        client.BaseAddress = new Uri(testURL+urlParameters);
 
         //add an Accept header for application/octet-stream
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+        HttpResponseMessage response = client.GetAsync("").Result;
 
         if (response.IsSuccessStatusCode) {
 

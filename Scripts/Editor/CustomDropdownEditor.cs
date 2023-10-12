@@ -6,20 +6,41 @@ using UnityEditor;
 public class CustomDropdownEditor : Editor {
 
     private DemoArticle da;
+    private SerializedProperty filterProp;
 
 
     void OnEnable(){
-        ArticleManager.FillArticles();
+
+        filterProp = serializedObject.FindProperty ("filter");
+
+        
         da = (DemoArticle)target;
-        //da.SetTransforms();
+        ArticleManager.FillArticles(da.GetFilter());
 
     }
     
 
     public override void OnInspectorGUI(){
-        da.ChangeArticle(EditorGUILayout.Popup("Select the article",   da.GetCurrInx(), ArticleManager.GetArticleNames()));
+
+        string prevFilter = filterProp.stringValue.Trim();
+
+        EditorGUILayout.PropertyField(filterProp, new GUIContent ("Filter"));
+
+        da.ChangeArticle(EditorGUILayout.Popup("Select the article",   ArticleManager.MapId(da.GetCurrId()), ArticleManager.GetArticleNames()));
         if(GUI.changed)
             EditorUtility.SetDirty(da); 
+
+
+        if(prevFilter != filterProp.stringValue.Trim()){
+            da.SetFilter(filterProp.stringValue);
+
+            ArticleManager.ResetIdMap();
+            ArticleManager.FillArticles(filterProp.stringValue);
+
+            Repaint();
+        }
+
+        serializedObject.ApplyModifiedProperties ();
     }
 
 

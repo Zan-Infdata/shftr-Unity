@@ -21,6 +21,6 @@ public class StartupEditor {
 public class StartupPlayMode{
     [InitializeOnEnterPlayMode]
     static void StartPlayMode(){
-        ArticleManager.FillArticles();
+        ArticleManager.FillArticles("");
     }
 }
