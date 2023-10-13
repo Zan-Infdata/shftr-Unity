@@ -24,6 +24,7 @@ public class CustomDropdownEditor : Editor {
 
         string prevFilter = filterProp.stringValue.Trim();
 
+
         EditorGUILayout.PropertyField(filterProp, new GUIContent ("Filter"));
 
         da.ChangeArticle(EditorGUILayout.Popup("Select the article",   ArticleManager.MapId(da.GetCurrId()), ArticleManager.GetArticleNames()));
@@ -32,12 +33,17 @@ public class CustomDropdownEditor : Editor {
 
 
         if(prevFilter != filterProp.stringValue.Trim()){
-            da.SetFilter(filterProp.stringValue);
+            da.SetFilter(filterProp.stringValue.Trim());
+            ArticleManager.SetFilter(filterProp.stringValue.Trim());
 
             ArticleManager.ResetIdMap();
             ArticleManager.FillArticles(filterProp.stringValue);
 
             Repaint();
+        }
+        else if(filterProp.stringValue.Trim() != ArticleManager.GetFilter()){ 
+            da.SetFilter(ArticleManager.GetFilter());
+            
         }
 
         serializedObject.ApplyModifiedProperties ();

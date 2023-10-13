@@ -11,6 +11,9 @@ public static class ArticleManager{
     public const string CHILD_2 = "Model";
 
     [SerializeField]
+    private static string filter = "";
+
+    [SerializeField]
     private static Dictionary<int, int> idMap = new Dictionary<int, int>();
 
     [SerializeField]
@@ -18,6 +21,14 @@ public static class ArticleManager{
     [SerializeField]
     private static List<string> articleNames = new List<string>();
 
+    public static string GetFilter(){
+        return filter;
+    }
+
+    public static void SetFilter(string f){
+        filter= f;
+    }
+    
     public static Dictionary<int, int> GetIdMapp(){
         return idMap;
     }
