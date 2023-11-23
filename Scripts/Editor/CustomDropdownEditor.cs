@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(DemoArticle))]
+[CustomEditor(typeof(Article))]
 [CanEditMultipleObjects]
 public class CustomDropdownEditor : Editor {
 
-    private DemoArticle da;
+    private Article da;
     private SerializedProperty filterProp;
 
 
@@ -14,7 +14,7 @@ public class CustomDropdownEditor : Editor {
         filterProp = serializedObject.FindProperty ("filter");
 
         
-        da = (DemoArticle)target;
+        da = (Article)target;
         ArticleManager.FillArticles(da.GetFilter());
 
     }

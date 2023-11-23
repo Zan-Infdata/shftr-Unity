@@ -12,7 +12,7 @@ using System.Text;
 using System.IO;
 using System;
 
-public class DemoArticle : MonoBehaviour{
+public class Article : MonoBehaviour{
 
     [SerializeField]
     private int currId;

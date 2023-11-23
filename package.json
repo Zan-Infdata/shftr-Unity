@@ -1,7 +1,7 @@
 {
     "name": "com.zan-infdata.shftr-unity",
     "displayName": "Shapeshifter",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "unity": "2021.3",
     "keywords": ["promotion"],
 	"description": "Shapeshifter package for Unity",
