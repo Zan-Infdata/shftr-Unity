@@ -5,7 +5,7 @@ using System.IO;
 
 public static class FileManager{
 
-    public const string DOWN_PATH = @"./Assets/Test/";
+    public const string DOWN_PATH = @"./Assets/Shapeshifter/";
 
     public static bool CheckIfModelExists(string file){
         string fp = DOWN_PATH+file;
