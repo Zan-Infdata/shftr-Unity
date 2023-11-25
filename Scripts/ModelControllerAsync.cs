@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Siccity.GLTFUtility;
 
+
 public class ModelControllerAsync{
     
     private Transform parent;
@@ -13,8 +14,8 @@ public class ModelControllerAsync{
         this.defModel = dm;
     }
 
-    public void ImportModelAsync(string fp) {
-        Importer.LoadFromFileAsync(fp, new ImportSettings(), OnFinishAsync);
+    public void ImportModelAsync(byte[] byteStream) {
+        Importer.ImportGLBAsync(byteStream, new ImportSettings(), OnFinishAsync);
     }
 
     private void OnFinishAsync(GameObject result, AnimationClip[] animations) {

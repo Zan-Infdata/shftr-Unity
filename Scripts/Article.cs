@@ -8,7 +8,6 @@ using Unity.Collections;
 using System.Text;
 
 
-
 using System.IO;
 using System;
 
@@ -31,7 +30,8 @@ public class Article : MonoBehaviour{
     private string filter = "";
 
     private JobHandle jh;
-    private NativeArray<char> na;
+    private NativeArray<byte> bs;
+    private NativeArray<int> ms;
 
     public string GetFilter(){
         return filter;
@@ -82,10 +82,15 @@ public class Article : MonoBehaviour{
             if(jh.IsCompleted){
 
                 jh.Complete();
-                string file = new string(na.ToArray()).Trim('\0');
-                na.Dispose();
 
-                ModelController.ImportModelAsync(file,model,defModel);
+
+                byte[] byteStream = bs.ToArray();
+                byteStream = byteStream[0..ms[0]];
+                
+                ms.Dispose();
+                bs.Dispose();
+
+                ModelController.ImportModelAsync(byteStream,model,defModel);
 
                 isLoaded = true;
             }
@@ -126,20 +131,22 @@ public class Article : MonoBehaviour{
         string modelFileName = json_response[APIController.DATA][0][APIController.COL1].ToString();
         
         //handle download
-        await ModelController.HandleDownload(modelFileName);
+        byte[] byteStream = await APIController.DownoadModel(modelFileName);
 
         //show the model
-        currDefModel = ModelController.ImportModel(modelFileName, defModel);
+        currDefModel = ModelController.ImportModel(byteStream, defModel);
 
     }
 
     private JobHandle J_ShowCurrentModel(){
 
-        na = new NativeArray<char>(45,Allocator.Persistent);
+        bs = new NativeArray<byte>(2000000,Allocator.Persistent);
+        ms = new NativeArray<int>(1, Allocator.Persistent);
 
         ShowCurrentModelJob job = new ShowCurrentModelJob{
             modelId = currId,
-            result = na,
+            model = bs,
+            modelSize = ms
         };
 
         return job.Schedule();
@@ -155,7 +162,8 @@ public class Article : MonoBehaviour{
 public struct ShowCurrentModelJob : IJob{
 
     public int modelId;
-    public NativeArray<char> result;
+    public NativeArray<byte> model;
+    public NativeArray<int> modelSize;
     public async void Execute(){
 
 
@@ -165,12 +173,12 @@ public struct ShowCurrentModelJob : IJob{
         string modelFileName = json_response[APIController.DATA][0][APIController.COL1].ToString();
 
         //hande download
-        await ModelController.HandleDownload(modelFileName);
-
-        char[] dump = modelFileName.ToCharArray();
-
+        byte[] dump = await APIController.DownoadModel(modelFileName);
+        
+        modelSize[0] = dump.Length;
         for (int i = 0; i < dump.Length; i++) {
-            result[i] = dump[i];
+            model[i] = dump[i];
+            
         }
 
 
